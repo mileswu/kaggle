@@ -12,6 +12,7 @@ ds_test['Sex'] = ds_test['Sex'].map({'male': 0, 'female': 1})
 # Get raw numpy arrays for learning
 raw_training = ds[['Survived', 'Sex', 'Age']].values
 raw_testing = ds_test[['Sex', 'Age']].values
+features = ds[['Sex', 'Age']].columns.values
 
 # Choose learning method
 method = "tree"
@@ -27,10 +28,14 @@ elif method == "gradientboostedtree":
     from sklearn.ensemble import GradientBoostingClassifier
     classifier = GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, random_state=0)
 classifier.fit(raw_training[0::, 1::], raw_training[0::, 0])
-print("Predicted correctly on training data: %f" % classifier.score(raw_training[0::, 1::], raw_training[0::, 0]))
-raw_predictions = classifier.predict(raw_testing).astype(int)
 
-# Prepare output
+print("Predicted correctly on training data: %f" % classifier.score(raw_training[0::, 1::], raw_training[0::, 0]))
+print("Feature importances:")
+for (i, j) in zip(features, classifier.feature_importances_):
+    print("  %s - %f" % (i, j))
+
+# Do predicting
+raw_predictions = classifier.predict(raw_testing).astype(int)
 ds_test['Survived'] = raw_predictions
 output_filename = "learning-sexage-" + method + ".csv"
 ds_test[['PassengerId', 'Survived']].to_csv(output_filename, index=False)
