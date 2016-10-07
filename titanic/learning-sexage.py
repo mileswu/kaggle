@@ -1,5 +1,9 @@
-import pandas
+# Options
+features = ['Sex', 'Age']
+method = "tree"
 
+# Get data
+import pandas
 ds = pandas.read_csv("data/train.csv")
 ds_test = pandas.read_csv("data/test.csv")
 
@@ -9,13 +13,15 @@ ds['Sex'] = ds['Sex'].map({'male': 0, 'female': 1})
 ds_test.loc[ds_test['Age'].isnull(), 'Age'] = -1
 ds_test['Sex'] = ds_test['Sex'].map({'male': 0, 'female': 1})
 
-# Get raw numpy arrays for learning
-raw_training = ds[['Survived', 'Sex', 'Age']].values
-raw_testing = ds_test[['Sex', 'Age']].values
-features = ds[['Sex', 'Age']].columns.values
+# Check that there is no missing data
+if ds[features].isnull().sum().sum() !=0 or ds_test[features].isnull().sum().sum() !=0:
+    print("WARNING: there is null data")
+    print(ds[features].isnull().sum())
+    print(ds_test[features].isnull().sum())
 
-# Choose learning method
-method = "tree"
+# Get raw numpy arrays for learning
+raw_training = ds[['Survived'] + features].values
+raw_testing = ds_test[features].values
 
 # Do learning
 if method == "tree":
