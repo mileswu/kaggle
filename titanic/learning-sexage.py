@@ -1,6 +1,7 @@
 # Options
-features = ['Sex', 'Age']
-method = "tree"
+#features = ['Sex', 'Age', 'Pclass', 'Fare']
+features = ['Sex', 'Age', 'Pclass', 'Fare']
+method = "svm-svc"
 
 # Get data
 import pandas
@@ -12,6 +13,8 @@ ds.loc[ds['Age'].isnull(), 'Age'] = -1
 ds['Sex'] = ds['Sex'].map({'male': 0, 'female': 1})
 ds_test.loc[ds_test['Age'].isnull(), 'Age'] = -1
 ds_test['Sex'] = ds_test['Sex'].map({'male': 0, 'female': 1})
+ds.loc[ds['Fare'].isnull(), 'Fare'] = -1
+ds_test.loc[ds_test['Fare'].isnull(), 'Fare'] = -1
 
 # Check that there is no missing data
 if ds[features].isnull().sum().sum() !=0 or ds_test[features].isnull().sum().sum() !=0:
@@ -33,12 +36,16 @@ elif method == "randomforest":
 elif method == "gradientboostedtree":
     from sklearn.ensemble import GradientBoostingClassifier
     classifier = GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, random_state=0)
+elif method == "svm-svc":
+    from sklearn.svm import SVC
+    classifier = SVC(random_state=0)
 classifier.fit(raw_training[0::, 1::], raw_training[0::, 0])
 
 print("Predicted correctly on training data: %f" % classifier.score(raw_training[0::, 1::], raw_training[0::, 0]))
-print("Feature importances:")
-for (i, j) in zip(features, classifier.feature_importances_):
-    print("  %s - %f" % (i, j))
+if method == "tree" or method == "randomforest" or method == "gradientboostedtree":
+    print("Feature importances:")
+    for (i, j) in zip(features, classifier.feature_importances_):
+        print("  %s - %f" % (i, j))
 
 # Do predicting
 raw_predictions = classifier.predict(raw_testing).astype(int)
