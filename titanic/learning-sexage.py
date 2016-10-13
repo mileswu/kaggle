@@ -9,12 +9,34 @@ ds = pandas.read_csv("data/train.csv")
 ds_test = pandas.read_csv("data/test.csv")
 
 # Clean age and convert sex
-ds.loc[ds['Age'].isnull(), 'Age'] = -1
+ds.loc[ds['Age'].isnull(), 'Age'] = ds['Age'].median()
 ds['Sex'] = ds['Sex'].map({'male': 0, 'female': 1})
-ds_test.loc[ds_test['Age'].isnull(), 'Age'] = -1
+ds_test.loc[ds_test['Age'].isnull(), 'Age'] = ds['Age'].median()
 ds_test['Sex'] = ds_test['Sex'].map({'male': 0, 'female': 1})
-ds.loc[ds['Fare'].isnull(), 'Fare'] = -1
-ds_test.loc[ds_test['Fare'].isnull(), 'Fare'] = -1
+ds.loc[ds['Fare'].isnull(), 'Fare'] = ds['Fare'].median()
+ds_test.loc[ds_test['Fare'].isnull(), 'Fare'] = ds['Fare'].median()
+
+ds['Married'] = 0
+ds.loc[(ds['Sex'] == 1) & (ds['Name'].str.contains("Mrs")), 'Married'] = 1
+ds.loc[ds['Sex'] == 0, 'Married'] = 2
+ds_test['Married'] = 0
+ds_test.loc[(ds_test['Sex'] == 1) & (ds_test['Name'].str.contains("Mrs")), 'Married'] = 1
+ds_test.loc[ds_test['Sex'] == 0, 'Married'] = 2
+
+ds['NotMr'] = 1
+ds.loc[(ds['Sex'] == 0) & (ds['Name'].str.contains("Mr")), 'NotMr'] = 0
+ds.loc[ds['Sex'] == 1, 'NotMr'] = 3
+ds_test['NotMr'] = 1
+ds_test.loc[(ds['Sex'] == 0) & (ds_test['Name'].str.contains("Mr")), 'NotMr'] = 0
+ds_test.loc[ds_test['Sex'] == 1, 'NotMr'] = 3
+
+ds['FamilySize'] = ds['Parch'] + ds['SibSp']
+ds_test['FamilySize'] = ds_test['Parch'] + ds_test['SibSp']
+
+print("Survival Rate for male v female: %f v %f" % (ds[ds['Sex'] == 0]['Survived'].mean(), ds[ds['Sex'] == 1]['Survived'].mean()))
+print("Survival Rate for 1st/2nd/3rd class: %f v %f v %f" % (ds[ds['Pclass'] == 1]['Survived'].mean(), ds[ds['Pclass'] == 2]['Survived'].mean(), ds[ds['Pclass'] == 3]['Survived'].mean()))
+print("Survival Rate for females with Mrs v. NotMrs: %f v %f" % (ds[(ds['Sex'] == 1) & (ds['Married'] == 1)]['Survived'].mean(), ds[(ds['Sex'] == 1) & (ds['Married'] == 0)]['Survived'].mean()))
+print("Survival Rate for males with Mr v. NotMr: %f v %f" % (ds[(ds['Sex'] == 0) & (ds['NotMr'] == 0)]['Survived'].mean(), ds[(ds['Sex'] == 0) & (ds['NotMr'] == 1)]['Survived'].mean()))
 
 # Check that there is no missing data
 if ds[features].isnull().sum().sum() !=0 or ds_test[features].isnull().sum().sum() !=0:
