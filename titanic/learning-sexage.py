@@ -1,7 +1,7 @@
 # Options
 #features = ['Sex', 'Age', 'Pclass', 'Fare']
 features = ['Sex', 'Age', 'Pclass', 'Fare']
-method = "svm-svc"
+method = "logistic"
 
 # Get data
 import pandas
@@ -39,12 +39,20 @@ elif method == "gradientboostedtree":
 elif method == "svm-svc":
     from sklearn.svm import SVC
     classifier = SVC(random_state=0)
+elif method == "logistic":
+    from sklearn.linear_model import LogisticRegression
+    classifier = LogisticRegression(random_state=0)
+
 classifier.fit(raw_training[0::, 1::], raw_training[0::, 0])
 
 print("Predicted correctly on training data: %f" % classifier.score(raw_training[0::, 1::], raw_training[0::, 0]))
 if method == "tree" or method == "randomforest" or method == "gradientboostedtree":
     print("Feature importances:")
     for (i, j) in zip(features, classifier.feature_importances_):
+        print("  %s - %f" % (i, j))
+elif method == "logistic":
+    print("Feature coefficients:")
+    for (i, j) in zip(features, classifier.coef_[0]):
         print("  %s - %f" % (i, j))
 
 # Do predicting
