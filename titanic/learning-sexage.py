@@ -71,6 +71,11 @@ elif method == "nn-mlp":
     from sklearn.neural_network import MLPClassifier
     classifier = MLPClassifier(hidden_layer_sizes=(100,100,100), random_state=0)
 
+# Cross-validation
+from sklearn.model_selection import cross_val_score
+cvscores = cross_val_score(classifier, raw_training[0::, 1::], raw_training[0::, 0], cv=3)
+print("Cross validation score: %f (stdev=%f)" % (cvscores.mean(), cvscores.std()))
+
 classifier.fit(raw_training[0::, 1::], raw_training[0::, 0])
 
 print("Predicted correctly on training data: %f" % classifier.score(raw_training[0::, 1::], raw_training[0::, 0]))
