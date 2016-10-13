@@ -64,6 +64,9 @@ elif method == "svm-svc":
 elif method == "logistic":
     from sklearn.linear_model import LogisticRegression
     classifier = LogisticRegression(random_state=0)
+elif method == "logistic-cv":
+    from sklearn.linear_model import LogisticRegressionCV
+    classifier = LogisticRegressionCV(Cs=100, random_state=0)
 elif method == "nn-mlp":
     from sklearn.neural_network import MLPClassifier
     classifier = MLPClassifier(hidden_layer_sizes=(100,100,100), random_state=0)
@@ -75,7 +78,7 @@ if method == "tree" or method == "randomforest" or method == "gradientboostedtre
     print("Feature importances:")
     for (i, j) in zip(features, classifier.feature_importances_):
         print("  %s - %f" % (i, j))
-elif method == "logistic":
+elif method == "logistic" or method == "logistic-cv":
     print("Feature coefficients:")
     for (i, j) in zip(features, classifier.coef_[0]):
         print("  %s - %f" % (i, j))
