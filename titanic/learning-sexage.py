@@ -1,7 +1,7 @@
 # Options
 #features = ['Sex', 'Age', 'Pclass', 'Fare']
 features = ['Sex', 'Age', 'Pclass', 'Fare']
-method = "logistic"
+method = "nn-mlp"
 
 # Get data
 import pandas
@@ -42,6 +42,9 @@ elif method == "svm-svc":
 elif method == "logistic":
     from sklearn.linear_model import LogisticRegression
     classifier = LogisticRegression(random_state=0)
+elif method == "nn-mlp":
+    from sklearn.neural_network import MLPClassifier
+    classifier = MLPClassifier(hidden_layer_sizes=(100,100,100), random_state=0)
 
 classifier.fit(raw_training[0::, 1::], raw_training[0::, 0])
 
